@@ -1,6 +1,7 @@
 package io.codelex.flightplanner.admin;
 
-import io.codelex.flightplanner.domain.AddFlightRequest;
+import io.codelex.flightplanner.common.FlightService;
+import io.codelex.flightplanner.dto.AddFlightRequest;
 import io.codelex.flightplanner.domain.Flight;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -12,9 +13,9 @@ import javax.validation.Valid;
 @RequestMapping("/admin-api/flights")
 public class AdminController {
 
-    private final AdminService flightsService;
+    private final FlightService flightsService;
 
-    public AdminController(AdminService flightsService) {
+    public AdminController(FlightService flightsService) {
         this.flightsService = flightsService;
     }
 

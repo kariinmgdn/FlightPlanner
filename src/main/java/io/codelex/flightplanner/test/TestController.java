@@ -1,20 +1,20 @@
 package io.codelex.flightplanner.test;
 
+import io.codelex.flightplanner.common.FlightService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/testing-api")
 public class TestController {
-    private final TestService testService;
+    private final FlightService flightService;
 
-    public TestController(TestService testService) {
-        this.testService = testService;
+    public TestController(FlightService flightService) {
+        this.flightService = flightService;
     }
-
 
     @RequestMapping("/clear")
     public void clear() {
-        testService.clear();
+        flightService.clear();
     }
 }
