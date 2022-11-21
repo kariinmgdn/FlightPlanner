@@ -1,6 +1,9 @@
-package io.codelex.flightplanner.repository;
+package io.codelex.flightplanner.common;
 
 import io.codelex.flightplanner.domain.*;
+import io.codelex.flightplanner.dto.AddFlightRequest;
+import io.codelex.flightplanner.dto.PageResult;
+import io.codelex.flightplanner.dto.SearchFlightsRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
@@ -41,20 +44,6 @@ public class InMemoryRepository implements FlightRepository {
     }
 
     @Override
-    public Flight findFlightById(int id) {
-
-        Flight flight = flightList.stream().filter(flight1 -> flight1.getId() == id).findAny().orElse(null);
-
-        if (flight == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        if (flight.getTo().equals(flight.getFrom()) || flight.getDepartureTime().isAfter(flight.getArrivalTime())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
-        return flight;
-    }
-
-    @Override
     public PageResult<Flight> searchFlights(SearchFlightsRequest searchFlightsRequest) {
 
         List<Flight> flights = new ArrayList<>();
@@ -71,7 +60,6 @@ public class InMemoryRepository implements FlightRepository {
 
         return new PageResult<>(0, flights.size(), flights);
     }
-
 
     @Override
     public synchronized void deleteFlight(int id) {
@@ -98,7 +86,6 @@ public class InMemoryRepository implements FlightRepository {
         }
         return airports;
     }
-
 
     @Override
     public void clear() {

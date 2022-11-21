@@ -17,12 +17,12 @@ public class Airport {
     private final String airport;
 
     public Airport(String country, String city, String airport) {
-        this.country = validInput(country);
-        this.city = validInput(city);
+        this.country = formatInput(country);
+        this.city = formatInput(city);
         this.airport = airport.toUpperCase().trim();
     }
 
-    private String validInput(String input) {
+    private String formatInput(String input) {
         return Arrays
                 .stream(input.split(" "))
                 .map(originalInput -> originalInput.substring(0, 1).toUpperCase() + originalInput.substring(1).toLowerCase())

@@ -1,9 +1,10 @@
 package io.codelex.flightplanner.customer;
 
+import io.codelex.flightplanner.common.FlightService;
 import io.codelex.flightplanner.domain.Airport;
 import io.codelex.flightplanner.domain.Flight;
-import io.codelex.flightplanner.domain.PageResult;
-import io.codelex.flightplanner.domain.SearchFlightsRequest;
+import io.codelex.flightplanner.dto.PageResult;
+import io.codelex.flightplanner.dto.SearchFlightsRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -15,20 +16,20 @@ import java.util.HashSet;
 @RequestMapping("/api")
 public class CustomerController {
 
-    private final CustomerService costumerService;
+    private final FlightService flightService;
 
-    public CustomerController(CustomerService costumerService) {
-        this.costumerService = costumerService;
+    public CustomerController(FlightService flightService) {
+        this.flightService = flightService;
     }
 
     @GetMapping("/airports")
     public HashSet<Airport> searchAirports(String search) {
-        return costumerService.searchAirports(search);
+        return flightService.searchAirports(search);
     }
 
     @GetMapping("/flights/{id}")
     public Flight findFlightById(@PathVariable int id) {
-        return costumerService.findFlightById(id);
+        return flightService.fetchFlight(id);
     }
 
     @PostMapping("/flights/search")
@@ -37,6 +38,6 @@ public class CustomerController {
         if (searchFlightsRequest.getFrom().equalsIgnoreCase(searchFlightsRequest.getTo())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
-        return costumerService.searchFlights(searchFlightsRequest);
+        return flightService.searchFlights(searchFlightsRequest);
     }
 }

@@ -1,15 +1,18 @@
-package io.codelex.flightplanner.domain;
+package io.codelex.flightplanner.common;
+
+import io.codelex.flightplanner.domain.Airport;
+import io.codelex.flightplanner.domain.Flight;
+import io.codelex.flightplanner.dto.AddFlightRequest;
+import io.codelex.flightplanner.dto.PageResult;
+import io.codelex.flightplanner.dto.SearchFlightsRequest;
 
 import java.util.HashSet;
 
-@org.springframework.stereotype.Repository
 public interface FlightRepository {
 
     Flight addFlight(AddFlightRequest flightRequest);
 
     Flight fetchFlight(int id);
-
-    Flight findFlightById(int id);
 
     PageResult<Flight> searchFlights(SearchFlightsRequest searchFlightsRequest);
 
