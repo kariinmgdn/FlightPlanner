@@ -2,6 +2,7 @@ package io.codelex.flightplanner.dto;
 
 import io.codelex.flightplanner.domain.Airport;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -10,9 +11,11 @@ import java.util.Objects;
 
 public class AddFlightRequest {
 
+    @Valid
     @NotNull
     private final Airport from;
 
+    @Valid
     @NotNull
     private final Airport to;
 
@@ -24,7 +27,6 @@ public class AddFlightRequest {
 
     @NotNull
     private final LocalDateTime arrivalTime;
-
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     public AddFlightRequest(Airport from, Airport to, String carrier, String departureTime, String arrivalTime) {

@@ -1,6 +1,6 @@
 package io.codelex.flightplanner.admin;
 
-import io.codelex.flightplanner.common.FlightService;
+import io.codelex.flightplanner.common.FlightServiceInterface;
 import io.codelex.flightplanner.dto.AddFlightRequest;
 import io.codelex.flightplanner.domain.Flight;
 import org.springframework.http.HttpStatus;
@@ -13,9 +13,9 @@ import javax.validation.Valid;
 @RequestMapping("/admin-api/flights")
 public class AdminController {
 
-    private final FlightService flightsService;
+    private final FlightServiceInterface flightsService;
 
-    public AdminController(FlightService flightsService) {
+    public AdminController(FlightServiceInterface flightsService) {
         this.flightsService = flightsService;
     }
 
@@ -25,7 +25,8 @@ public class AdminController {
 
         if (flightRequest.getDepartureTime().isAfter(flightRequest.getArrivalTime())
                 || flightRequest.getDepartureTime().equals(flightRequest.getArrivalTime())
-                || flightRequest.getFrom().equals(flightRequest.getTo())) {
+                || flightRequest.getFrom().getAirport().trim()
+                .equalsIgnoreCase(flightRequest.getTo().getAirport().trim())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 
@@ -33,12 +34,12 @@ public class AdminController {
     }
 
     @GetMapping("{id}")
-    public Flight fetchFlight(@PathVariable int id) {
+    public Flight fetchFlight(@PathVariable long id) {
         return flightsService.fetchFlight(id);
     }
 
     @DeleteMapping("{id}")
-    public synchronized void deleteFlight(@PathVariable int id) {
+    public synchronized void deleteFlight(@PathVariable long id) {
         flightsService.deleteFlight(id);
     }
 }

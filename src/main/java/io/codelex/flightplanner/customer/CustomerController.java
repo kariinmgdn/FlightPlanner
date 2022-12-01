@@ -1,6 +1,6 @@
 package io.codelex.flightplanner.customer;
 
-import io.codelex.flightplanner.common.FlightService;
+import io.codelex.flightplanner.common.FlightServiceInterface;
 import io.codelex.flightplanner.domain.Airport;
 import io.codelex.flightplanner.domain.Flight;
 import io.codelex.flightplanner.dto.PageResult;
@@ -16,9 +16,9 @@ import java.util.HashSet;
 @RequestMapping("/api")
 public class CustomerController {
 
-    private final FlightService flightService;
+    private final FlightServiceInterface flightService;
 
-    public CustomerController(FlightService flightService) {
+    public CustomerController(FlightServiceInterface flightService) {
         this.flightService = flightService;
     }
 
@@ -28,7 +28,7 @@ public class CustomerController {
     }
 
     @GetMapping("/flights/{id}")
-    public Flight findFlightById(@PathVariable int id) {
+    public Flight findFlightById(@PathVariable long id) {
         return flightService.fetchFlight(id);
     }
 

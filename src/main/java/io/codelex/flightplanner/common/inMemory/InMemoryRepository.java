@@ -1,9 +1,11 @@
-package io.codelex.flightplanner.common;
+package io.codelex.flightplanner.common.inMemory;
 
+import io.codelex.flightplanner.common.FlightRepositoryInterface;
 import io.codelex.flightplanner.domain.*;
 import io.codelex.flightplanner.dto.AddFlightRequest;
 import io.codelex.flightplanner.dto.PageResult;
 import io.codelex.flightplanner.dto.SearchFlightsRequest;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
@@ -14,7 +16,8 @@ import java.util.HashSet;
 import java.util.List;
 
 @Repository
-public class InMemoryRepository implements FlightRepository {
+@ConditionalOnProperty(prefix = "flight-planner", name = "type", havingValue = "in-memory")
+public class InMemoryRepository implements FlightRepositoryInterface {
 
     private final List<Flight> flightList = new ArrayList<>();
 
@@ -34,7 +37,7 @@ public class InMemoryRepository implements FlightRepository {
     }
 
     @Override
-    public Flight fetchFlight(int id) {
+    public Flight fetchFlight(long id) {
 
         Flight flight = flightList.stream().filter(flight1 -> flight1.getId() == id).findAny().orElse(null);
         if (flight == null) {
@@ -62,7 +65,7 @@ public class InMemoryRepository implements FlightRepository {
     }
 
     @Override
-    public synchronized void deleteFlight(int id) {
+    public synchronized void deleteFlight(long id) {
         flightList.remove(flightList.stream().filter(flight1 -> flight1.getId() == id).findAny().orElse(null));
     }
 

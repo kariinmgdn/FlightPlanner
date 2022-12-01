@@ -1,19 +1,22 @@
-package io.codelex.flightplanner.common;
+package io.codelex.flightplanner.common.inMemory;
 
+import io.codelex.flightplanner.common.FlightServiceInterface;
 import io.codelex.flightplanner.domain.*;
 import io.codelex.flightplanner.dto.AddFlightRequest;
 import io.codelex.flightplanner.dto.PageResult;
 import io.codelex.flightplanner.dto.SearchFlightsRequest;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 
 @Service
-public class FlightService {
+@ConditionalOnProperty(prefix = "flight-planner", name = "type", havingValue = "in-memory")
+public class FlightServiceInMemory implements FlightServiceInterface {
 
     private final InMemoryRepository inMemory;
 
-    public FlightService(InMemoryRepository inMemory) {
+    public FlightServiceInMemory(InMemoryRepository inMemory) {
         this.inMemory = inMemory;
     }
 
@@ -21,11 +24,11 @@ public class FlightService {
         return inMemory.addFlight(flightRequest);
     }
 
-    public Flight fetchFlight(int id) {
+    public Flight fetchFlight(long id) {
         return inMemory.fetchFlight(id);
     }
 
-    public synchronized void deleteFlight(int id) {
+    public synchronized void deleteFlight(long id) {
         inMemory.deleteFlight(id);
     }
 
