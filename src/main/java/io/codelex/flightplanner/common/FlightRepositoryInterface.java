@@ -8,16 +8,17 @@ import io.codelex.flightplanner.dto.SearchFlightsRequest;
 
 import java.util.HashSet;
 
-public interface FlightRepository {
+public interface FlightRepositoryInterface {
 
     Flight addFlight(AddFlightRequest flightRequest);
 
-    Flight fetchFlight(int id);
+    Flight fetchFlight(long id);
 
     PageResult<Flight> searchFlights(SearchFlightsRequest searchFlightsRequest);
 
-    void deleteFlight(int id);
+    void deleteFlight(long id);
 
     HashSet<Airport> searchAirports(String airport);
+
     void clear();
 }

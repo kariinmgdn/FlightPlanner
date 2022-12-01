@@ -1,25 +1,35 @@
 package io.codelex.flightplanner.domain;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Entity
+@Table(name = "airports")
 public class Airport {
 
     @NotBlank
-    private final String country;
+    private String country;
 
     @NotBlank
-    private final String city;
+    private String city;
 
     @NotBlank
-    private final String airport;
+    @Id
+    private String airport;
 
     public Airport(String country, String city, String airport) {
         this.country = formatInput(country);
         this.city = formatInput(city);
         this.airport = airport.toUpperCase().trim();
+    }
+
+    public Airport() {
+
     }
 
     private String formatInput(String input) {
@@ -39,6 +49,10 @@ public class Airport {
 
     public String getAirport() {
         return airport;
+    }
+
+    public void setAirport(String airport) {
+        this.airport = airport;
     }
 
     @Override
