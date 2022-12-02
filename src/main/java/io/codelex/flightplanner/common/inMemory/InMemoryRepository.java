@@ -1,6 +1,5 @@
 package io.codelex.flightplanner.common.inMemory;
 
-import io.codelex.flightplanner.common.FlightRepositoryInterface;
 import io.codelex.flightplanner.domain.*;
 import io.codelex.flightplanner.dto.AddFlightRequest;
 import io.codelex.flightplanner.dto.PageResult;
@@ -17,11 +16,10 @@ import java.util.List;
 
 @Repository
 @ConditionalOnProperty(prefix = "flight-planner", name = "type", havingValue = "in-memory")
-public class InMemoryRepository implements FlightRepositoryInterface {
+public class InMemoryRepository {
 
     private final List<Flight> flightList = new ArrayList<>();
 
-    @Override
     public synchronized Flight addFlight(AddFlightRequest flightRequest) {
 
         Flight newFlight = new Flight(flightList.size(), flightRequest.getFrom(), flightRequest.getTo(),
@@ -36,7 +34,6 @@ public class InMemoryRepository implements FlightRepositoryInterface {
         return newFlight;
     }
 
-    @Override
     public Flight fetchFlight(long id) {
 
         Flight flight = flightList.stream().filter(flight1 -> flight1.getId() == id).findAny().orElse(null);
@@ -46,7 +43,6 @@ public class InMemoryRepository implements FlightRepositoryInterface {
         return flight;
     }
 
-    @Override
     public PageResult<Flight> searchFlights(SearchFlightsRequest searchFlightsRequest) {
 
         List<Flight> flights = new ArrayList<>();
@@ -64,12 +60,10 @@ public class InMemoryRepository implements FlightRepositoryInterface {
         return new PageResult<>(0, flights.size(), flights);
     }
 
-    @Override
     public synchronized void deleteFlight(long id) {
         flightList.remove(flightList.stream().filter(flight1 -> flight1.getId() == id).findAny().orElse(null));
     }
 
-    @Override
     public HashSet<Airport> searchAirports(String input) {
 
         HashSet<Airport> airports = new HashSet<>();
@@ -90,7 +84,6 @@ public class InMemoryRepository implements FlightRepositoryInterface {
         return airports;
     }
 
-    @Override
     public void clear() {
         flightList.clear();
     }
