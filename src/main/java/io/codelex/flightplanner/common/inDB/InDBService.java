@@ -11,20 +11,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @ConditionalOnProperty(prefix = "flight-planner", name = "type", havingValue = "in-DB")
-public class inDBService implements FlightServiceInterface {
+public class InDBService implements FlightServiceInterface {
 
     private final FlightRepository flightRepository;
     private final AirportRepository airportRepository;
 
-    public inDBService(FlightRepository flightRepository, AirportRepository airportRepository) {
+    public InDBService(FlightRepository flightRepository, AirportRepository airportRepository) {
         this.flightRepository = flightRepository;
         this.airportRepository = airportRepository;
     }
@@ -35,12 +34,15 @@ public class inDBService implements FlightServiceInterface {
         Flight newFlight = new Flight(flightRequest.getFrom(), flightRequest.getTo(),
                 flightRequest.getCarrier(), flightRequest.getDepartureTime(), flightRequest.getArrivalTime());
 
-        airportRepository.save(newFlight.getFrom());
-        airportRepository.save(newFlight.getTo());
 
-        if (flightRepository.findAll().contains(newFlight)) {
+        if (flightRepository.existsFlightByFromAndToAndCarrierAndDepartureTimeAndArrivalTime(
+                flightRequest.getFrom(), flightRequest.getTo(), flightRequest.getCarrier(),
+                flightRequest.getDepartureTime(), flightRequest.getArrivalTime())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
+
+        airportRepository.save(newFlight.getFrom());
+        airportRepository.save(newFlight.getTo());
 
         return flightRepository.save(newFlight);
 
@@ -48,20 +50,14 @@ public class inDBService implements FlightServiceInterface {
 
     @Override
     public Flight fetchFlight(long id) {
-
-        Flight flight = flightRepository.findAll().stream()
-                .filter(flight1 -> flight1.getId() == id).findAny().orElse(null);
-
-        if (flight == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        return flight;
+        return flightRepository
+                .findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @Override
     public void deleteFlight(long id) {
-
-        if (flightRepository.findAll().stream().anyMatch(flight -> flight.getId() == id)) {
+        if(flightRepository.findById(id).isPresent()) {
             flightRepository.deleteById(id);
         }
     }
@@ -69,30 +65,18 @@ public class inDBService implements FlightServiceInterface {
     @Override
     public PageResult<Flight> searchFlights(SearchFlightsRequest searchFlightsRequest) {
 
-        List<Flight> flights = new ArrayList<>();
+        String date = searchFlightsRequest.getDepartureDate();
+        LocalDateTime startTime = LocalDate.parse(date).atStartOfDay();
+        LocalDateTime endTime = LocalDate.parse(date).plusDays(1).atStartOfDay();
 
-        for (Flight flight : flightRepository.findAll()) {
-
-            if (flight.getFrom().getAirport().equals(searchFlightsRequest.getFrom())
-                    && flight.getTo().getAirport().equals(searchFlightsRequest.getTo())
-                    && flight.getDepartureTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-                    .equals(searchFlightsRequest.getDepartureDate())) {
-                flights.add(flight);
-            }
-        }
+        List<Flight> flights = flightRepository.searchFlights(searchFlightsRequest.getFrom(), searchFlightsRequest.getTo(), startTime, endTime);
 
         return new PageResult<>(0, flights.size(), flights);
     }
 
     @Override
     public HashSet<Airport> searchAirports(String input) {
-
-        String formattedInput = input.toLowerCase().trim();
-
-        return airportRepository.findAll().stream().filter(airport -> airport.getAirport().toLowerCase().contains(formattedInput)
-                        || airport.getCity().toLowerCase().contains(formattedInput)
-                        || airport.getCountry().toLowerCase().contains(formattedInput))
-                .collect(Collectors.toCollection(HashSet::new));
+        return airportRepository.findAirports(input.toLowerCase().trim());
     }
 
     @Override
